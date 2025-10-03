@@ -2,8 +2,7 @@
 org: pcasaverde
 service: calificador-leads-api
 
-# Es buena práctica mantener esta línea para fijar la versión.
-frameworkVersion: '3' 
+
 
 provider:
   name: aws
