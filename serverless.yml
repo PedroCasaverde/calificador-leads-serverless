@@ -3,7 +3,6 @@
 org: pcasaverde # Usa tu org aquí (PedroCasaverde si te pide)
 service: calificador-leads-api
 
-frameworkVersion: '3' # Mantenemos la versión 3
 
 provider:
   name: aws
