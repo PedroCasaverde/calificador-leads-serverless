@@ -1,8 +1,9 @@
-# serverless.yml CORREGIDO
+# serverless.yml FINAL
 org: pcasaverde
 service: calificador-leads-api
 
-
+# Es buena práctica mantener esta línea para fijar la versión.
+frameworkVersion: '3' 
 
 provider:
   name: aws
@@ -11,14 +12,10 @@ provider:
   stage: dev
   memorySize: 1024
   timeout: 20
-
-  # AÑADIDO: CORS se configura aquí en las nuevas versiones
   httpApi:
     cors: true
-
   iam:
     role: arn:aws:iam::013960419123:role/LabRole
-
   environment:
     LEADS_TABLE_NAME: leadsTable
 
@@ -29,7 +26,6 @@ functions:
       - httpApi:
           path: /leads
           method: post
-          # ELIMINADO: cors: true ya no va aquí
 
 resources:
   Resources:
@@ -49,11 +45,15 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: calificador-leads-frontend-${sls:stage}-${aws:accountId}
-        # ELIMINADO: La siguiente línea causaba el error fatal en S3
-        # AccessControl: PublicRead 
         WebsiteConfiguration:
           IndexDocument: index.html
           ErrorDocument: error.html
+        # AÑADIR ESTE BLOQUE COMPLETO para permitir que el bucket sea público.
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
           
     LeadFrontendBucketPolicy:
       Type: AWS::S3::BucketPolicy
