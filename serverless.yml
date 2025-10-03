@@ -13,12 +13,8 @@ provider:
 
   # ¡IMPORTANTE! Definimos los permisos que Lambda necesitará
   iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - dynamodb:PutItem # Permite a Lambda escribir en DynamoDB
-          Resource: "arn:aws:dynamodb:us-east-1:*:table/leadsTable" # Lo actualizaremos más adelante
+    role: arn:aws:iam::013960419123:role/LabRole
+
 
   environment: # Variables de entorno para Lambda
     LEADS_TABLE_NAME: leadsTable
