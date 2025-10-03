@@ -1,61 +1,64 @@
-# serverless.yml
-
-org: pcasaverde # Usa tu org aquí (PedroCasaverde si te pide)
+# serverless.yml CORREGIDO
+org: pcasaverde
 service: calificador-leads-api
+
 
 
 provider:
   name: aws
-  runtime: python3.9 # Mantenemos 3.9 para nuestro handler.py
+  runtime: python3.9
   region: us-east-1
   stage: dev
-  memorySize: 1024 # Añadido de tu ejemplo
-  timeout: 20 # Añadido de tu ejemplo
+  memorySize: 1024
+  timeout: 20
 
-  # ¡IMPORTANTE! Usamos el LabRole pre-configurado de AWS Academy
+  # AÑADIDO: CORS se configura aquí en las nuevas versiones
+  httpApi:
+    cors: true
+
   iam:
-    role: arn:aws:iam::013960419123:role/LabRole # ¡ESTE ES EL ARN QUE DEBES VERIFICAR!
+    role: arn:aws:iam::013960419123:role/LabRole
 
-  environment: # Variables de entorno para Lambda
+  environment:
     LEADS_TABLE_NAME: leadsTable
 
 functions:
   processLead:
     handler: handler.main
     events:
-      - httpApi: # Usamos httpApi para la integración más moderna y CORS
+      - httpApi:
           path: /leads
           method: post
-          cors: true # Habilita CORS para que el frontend pueda acceder
+          # ELIMINADO: cors: true ya no va aquí
 
-resources: # Aquí definimos nuestra tabla DynamoDB y S3
+resources:
   Resources:
     leadsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: leadsTable # Nombre de la tabla
+        TableName: leadsTable
         AttributeDefinitions:
-          - AttributeName: leadId # Nuestra clave primaria
-            AttributeType: S # String
+          - AttributeName: leadId
+            AttributeType: S
         KeySchema:
           - AttributeName: leadId
-            KeyType: HASH # Clave de partición
-        BillingMode: PAY_PER_REQUEST # Modelo de pago a demanda
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
 
-    # Definición de S3 Bucket para el frontend
     LeadFrontendBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: calificador-leads-frontend-${sls:stage}-${aws:accountId} # Nombre único del bucket
-        AccessControl: PublicRead # Permite acceso público para el hosting estático
+        BucketName: calificador-leads-frontend-${sls:stage}-${aws:accountId}
+        # ELIMINADO: La siguiente línea causaba el error fatal en S3
+        # AccessControl: PublicRead 
         WebsiteConfiguration:
           IndexDocument: index.html
           ErrorDocument: error.html
-    # Políticas para que el bucket sea accesible públicamente
+          
     LeadFrontendBucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
-        Bucket: !Ref LeadFrontendBucket # Referencia al bucket que acabamos de crear
+        Bucket: !Ref LeadFrontendBucket
         PolicyDocument:
           Statement:
             - Sid: PublicReadGetObject
